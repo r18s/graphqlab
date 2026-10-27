@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GraphiQL · graphqlab</title>
+    <style>
+      html, body, #graphiql { height: 100%; margin: 0; background: #0b1020; }
+    </style>
+    <link rel="stylesheet" href="/vendor/graphiql.min.css" />
+  </head>
+  <body>
+    <div id="graphiql">Carregando GraphiQL…</div>
+    <script crossorigin src="/vendor/react.production.min.js"></script>
+    <script crossorigin src="/vendor/react-dom.production.min.js"></script>
+    <script crossorigin src="/vendor/graphiql.min.js"></script>
+    <script>
+      // O Hasura aceita requisições sem credenciais na role "public" (ver docker-compose.yml)
+      try { if (!localStorage.getItem('graphiql:theme')) localStorage.setItem('graphiql:theme', 'dark') } catch {}
+      const fetcher = GraphiQL.createFetcher({ url: 'http://localhost:8080/v1/graphql' })
+      const query = `# Ctrl+Espaço abre o autocomplete. Ctrl+Enter executa.
+query TopUsers {
+  users(order_by: { posts_aggregate: { count: desc } }, limit: 3) {
+    name
+    posts_aggregate { aggregate { count } }
+    posts(limit: 2) {
+      title
+      comments { body user { name } }
+    }
+  }
+}
+`
+      ReactDOM.createRoot(document.getElementById('graphiql')).render(
+        React.createElement(GraphiQL, { fetcher, defaultQuery: query }),
+      )
+    </script>
+  </body>
+</html>

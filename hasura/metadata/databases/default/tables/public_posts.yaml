@@ -1,0 +1,36 @@
+table:
+  name: posts
+  schema: public
+object_relationships:
+  - name: user
+    using:
+      foreign_key_constraint_on: user_id
+array_relationships:
+  - name: comments
+    using:
+      foreign_key_constraint_on:
+        column: post_id
+        table:
+          name: comments
+          schema: public
+select_permissions:
+  - role: public
+    permission:
+      columns: [id, user_id, title, body, created_at]
+      filter: {}
+      allow_aggregations: true
+insert_permissions:
+  - role: public
+    permission:
+      check: {}
+      columns: [user_id, title, body]
+update_permissions:
+  - role: public
+    permission:
+      columns: [title, body]
+      filter: {}
+      check: {}
+delete_permissions:
+  - role: public
+    permission:
+      filter: {}
